@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+# Custom
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+.DS_Store
+*/.DS_Store
