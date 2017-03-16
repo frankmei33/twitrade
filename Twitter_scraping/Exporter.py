@@ -2,6 +2,8 @@
 
 import sys,getopt,got3,datetime,codecs
 
+import pandas as pandas
+
 def main(argv):
 
 	if len(argv) == 0:
