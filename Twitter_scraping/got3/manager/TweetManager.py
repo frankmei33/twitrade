@@ -39,7 +39,8 @@ class TweetManager:
 				dateSec = int(tweetPQ("small.time span.js-short-timestamp").attr("data-time"));
 				id = tweetPQ.attr("data-tweet-id");
 				permalink = tweetPQ.attr("data-permalink-path");
-				user_id = int(tweetPQ("a.js-user-profile-link").attr("data-user-id"))
+				user_id = int(tweetPQ("a.js-user-profile-link").attr("data-user-id"));
+				verified = tweetPQ("span.FullNameGroup span.UserBadges").text()
 				
 				geo = ''
 				geoSpan = tweetPQ('span.Tweet-geo')
@@ -65,6 +66,7 @@ class TweetManager:
 				tweet.geo = geo
 				tweet.urls = ",".join(urls)
 				tweet.author_id = user_id
+				tweet.verified = verified
 				
 				results.append(tweet)
 				resultsAux.append(tweet)
