@@ -140,8 +140,11 @@ classifier = nltk.NaiveBayesClassifier.train(training_set)
 
 # In[41]:
 
-#print (classifier.show_most_informative_features(32))
-
+#save trained classifier
+import pickle
+f = open('sentiment_classifier.pickle', 'wb')
+pickle.dump(classifier, f)
+f.close()
 
 # In[ ]:
 
