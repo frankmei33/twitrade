@@ -1,3 +1,8 @@
+import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+
 def review_cleaner(review):
     review = re.sub('[^a-zA-Z]',' ',review)
     review = word_tokenize(review.lower())

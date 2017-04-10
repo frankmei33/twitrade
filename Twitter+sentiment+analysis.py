@@ -1,26 +1,17 @@
-import re
+import review_cleaner
 import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 
 # List containing positive adn negative tweets
+print('Loading training set...')
 from nltk.corpus import twitter_samples
 pos=twitter_samples.strings('positive_tweets.json')
 neg=twitter_samples.strings('negative_tweets.json')
 
-def review_cleaner(review):
-    review = re.sub('[^a-zA-Z]',' ',review)
-    review = word_tokenize(review.lower())
-    eng_stopwords = set(stopwords.words("english"))
-    review = [w for w in review if not w in eng_stopwords]
-    review = ' '.join(review)
-    return(review)
-
 for i in range(0,len(pos)):
-    pos[i]=review_cleaner(pos[i])
+    pos[i]=review_cleaner.review_cleaner(pos[i])
     
 for i in range(0,len(neg)):
-    neg[i]=review_cleaner(neg[i])
+    neg[i]=review_cleaner.review_cleaner(neg[i])
 
 pos_tweets = []
 for i in range(0,len(pos)):
@@ -61,12 +52,14 @@ def extract_features(document):
         features['contains(%s)' % word] = (word in document_words)
     return features
 
+print('Training...')
 # apply feature extractor to the training set
 training_set = nltk.classify.apply_features(extract_features, tweets)
 
 # train the classifier with the training set
 classifier = nltk.NaiveBayesClassifier.train(training_set)
 
+print('Saving classifier...')
 #save trained classifier
 import pickle
 f = open('sentiment_classifier.pickle', 'wb')
