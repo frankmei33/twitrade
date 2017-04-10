@@ -23,6 +23,7 @@ def run_query_search(query, since, until):
 	tweetCriteria.since = since
 	tweetCriteria.until = until
 	tweetCriteria.querySearch = query
+	tweetCriteria.lang = 'English'
 			
 	outputName = tweetCriteria.querySearch + "_" + since + '.csv'
 	outputFile = codecs.open(query + '/' + outputName, "w+", "utf-8")
