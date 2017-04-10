@@ -1,24 +1,38 @@
+import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 # coding: utf-8
 
 # In[1]:
 
-# List containing positive tweets
-pos_tweets = [('I love this car', 'positive'),
-              ('This view is amazing', 'positive'),
-              ('I feel great this morning', 'positive'),
-              ('I am so excited about the concert', 'positive'),
-              ('He is my best friend', 'positive')]
+# List containing positive adn negative tweets
+from nltk.corpus import twitter_samples
+pos=twitter_samples.strings('positive_tweets.json')
+neg=twitter_samples.strings('nagative_tweets.json')
 
+def review_cleaner(review):
+    review = re.sub('[^a-zA-Z]',' ',review)
+    review = word_tokenize(review.lower())
+    eng_stopwords = set(stopwords.words("english"))
+    review = [w for w in review if not w in eng_stopwords]
+    review = ' '.join(review)
+    return(review)
 
-# In[2]:
+for i in range(0,len(pos)):
+    pos[i]=review_cleaner(pos[i])
+    
+for i in range(0,len(neg)):
+    neg[i]=review_cleaner(neg[i])
 
-# List containing negative tweets
-neg_tweets = [('I do not like this car', 'negative'),
-              ('This view is horrible', 'negative'),
-              ('I feel tired this morning', 'negative'),
-              ('I am not looking forward to the concert', 'negative'),
-              ('He is my enemy', 'negative')]
+pos_tweets = []
+for i in range(0,len(pos)):
+    pos_tweets.append((pos[i],'positive'))
+    
+neg_tweets = []
+for i in range(0,len(neg)):
+    neg_tweets.append((neg[i],'negative'))
 
 
 # In[3]:
