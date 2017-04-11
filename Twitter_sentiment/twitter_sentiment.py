@@ -34,12 +34,13 @@ def get_words_in_tweets(tweets):
     
 def get_word_features(wordlist):
     wordlist = nltk.FreqDist(wordlist)
+    wordlist = {k:v for (k,v) in wordlist.items() if v > 5}
     word_features = list(wordlist.keys())
     return word_features
 
 word_features = get_word_features(get_words_in_tweets(tweets))
 
-def extract_features(word_features, document):
+def extract_features(document):
     document_words = set(document)
     features = {}
     for word in word_features:
@@ -48,7 +49,7 @@ def extract_features(word_features, document):
 
 print('Training...')
 # apply feature extractor to the training set
-training_set = nltk.classify.apply_features(review_cleaner.extract_features, tweets)
+training_set = nltk.classify.apply_features(extract_features, tweets)
 
 # train the classifier with the training set
 classifier = nltk.NaiveBayesClassifier.train(training_set)
