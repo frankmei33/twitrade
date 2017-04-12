@@ -6,10 +6,8 @@
 # (all in lower cases).
 #
 # Note: now only supports usage like this example:
-# 	python Exporter_v2.py --querysearch "nasdaq" --since 2015-01-01 --until 2015-01-10
+# 	python Exporter_v2.py --querysearch "$tsla" --since 2015-01-01 --until 2015-01-10
 #
-# TODO: 
-#	add sentiment analysis
 
 import sys,getopt,got3,datetime,codecs
 import os
@@ -23,24 +21,22 @@ def run_query_search(query, since, until):
 	tweetCriteria.since = since
 	tweetCriteria.until = until
 	tweetCriteria.querySearch = query
-	tweetCriteria.lang = 'English'
-			
+	tweetCriteria.setLang('en')
+
 	outputName = tweetCriteria.querySearch + "_" + since + '.csv'
 	outputFile = codecs.open(query + '/' + outputName, "w+", "utf-8")
-	
+
 	outputFile.write('username,date,retweets,favorites,text,geo,mentions,hashtags,id,permalink,verified')
-	
+
 	print('Searching date: ', since)
-	
+
 	def receiveBuffer(tweets):
 		for t in tweets:
 			outputFile.write(('\n%s,%s,%d,%d,"%s",%s,%s,%s,"%s",%s,%s' % (t.username, t.date.strftime("%Y-%m-%d %H:%M"), t.retweets, t.favorites, t.text, t.geo, t.mentions, t.hashtags, t.id, t.permalink, t.verified)))
 		outputFile.flush();
-		# print(t.date)
-		# print('More %d saved on file...\n' % len(tweets))
-	
+
 	got3.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer)
-	
+
 	outputFile.close()
 	print('Done. Output file generated %s.' % (query + '/' + outputName))
 
@@ -51,23 +47,23 @@ def main(argv):
 	if len(argv) == 0:
 		print('You must pass some parameters. Use \"-h\" to help.')
 		return
-		
+
 	if len(argv) == 1 and argv[0] == '-h':
 		print("""\nThis is the Twitter scraping function.
 Example usage:
 	python Exporter_v2.py --querysearch "TSLA" --since 2015-01-01 --until 2015-01-10\n""")
 		return
 
-	try: 
+	try:
 		opts, args = getopt.getopt(argv, "", ("since=", "until=", "querysearch="))
-		
+
 		for opt,arg in opts:
 			if opt == '--since':
 				main_since = arg
-				
+
 			elif opt == '--until':
 				main_until = arg
-				
+
 			elif opt == '--querysearch':
 				query = arg.lower() # all to lower case
 
@@ -96,4 +92,3 @@ Example usage:
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
-

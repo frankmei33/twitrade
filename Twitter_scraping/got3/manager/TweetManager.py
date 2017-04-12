@@ -4,14 +4,14 @@ from pyquery import PyQuery
 import time
 
 class TweetManager:
-	
+
 	def __init__(self):
 		pass
-		
+
 	@staticmethod
 	def getTweets(tweetCriteria, receiveBuffer = None, bufferLength = 100):
 		refreshCursor = ''
-	
+
 		results = []
 		resultsAux = []
 		cookieJar = http.cookiejar.CookieJar()
@@ -22,16 +22,16 @@ class TweetManager:
 			if len(json['items_html'].strip()) == 0:
 				break
 
-			refreshCursor = json['min_position']			
+			refreshCursor = json['min_position']
 			tweets = PyQuery(json['items_html'])('div.js-stream-tweet')
-			
+
 			if len(tweets) == 0:
 				break
 
 			for i, tweetHTML in enumerate(tweets):
 				tweetPQ = PyQuery(tweetHTML)
 				tweet = models.Tweet()
-				
+
 				usernameTweet = tweetPQ("span.username.js-action-profile-name b").text();
 				txt = re.sub(r"\s+", " ", tweetPQ("p.js-tweet-text").text().replace('# ', '#').replace('@ ', '@').replace(',', '(comma)'));
 				retweets = int(tweetPQ("span.ProfileTweet-action--retweet span.ProfileTweet-actionCount").attr("data-tweet-stat-count").replace(",", ""));
@@ -41,8 +41,8 @@ class TweetManager:
 				permalink = tweetPQ.attr("data-permalink-path");
 				user_id = int(tweetPQ("a.js-user-profile-link").attr("data-user-id"));
 				verified = tweetPQ("span.FullNameGroup span.UserBadges").text()
-				
-				geo = ''
+
+				geo = '' # no geo
 				geoSpan = tweetPQ('span.Tweet-geo')
 				if len(geoSpan) > 0:
 					geo = geoSpan.attr('title')
@@ -55,7 +55,7 @@ class TweetManager:
 				tweet.id = id
 				tweet.permalink = 'https://twitter.com' + permalink
 				tweet.username = usernameTweet
-				
+
 				tweet.text = txt
 				tweet.date = datetime.datetime.fromtimestamp(dateSec)
 				tweet.formatted_date = datetime.datetime.fromtimestamp(dateSec).strftime("%a %b %d %X +0000 %Y")
@@ -67,46 +67,46 @@ class TweetManager:
 				tweet.urls = ",".join(urls)
 				tweet.author_id = user_id
 				tweet.verified = verified
-				
+
 				results.append(tweet)
 				resultsAux.append(tweet)
-				
+
 				if receiveBuffer and len(resultsAux) >= bufferLength:
 					receiveBuffer(resultsAux)
 					resultsAux = []
-				
+
 				if tweetCriteria.maxTweets > 0 and len(results) >= tweetCriteria.maxTweets:
 					active = False
 					break
 
 		if receiveBuffer and len(resultsAux) > 0:
 			receiveBuffer(resultsAux)
-		
+
 		return results
-	
+
 	@staticmethod
 	def getJsonReponse(tweetCriteria, refreshCursor, cookieJar):
 		url = "https://twitter.com/i/search/timeline?f=realtime&q=%s&src=typd&%smax_position=%s"
-		
+
 		urlGetData = ''
 		if hasattr(tweetCriteria, 'username'):
 			urlGetData += ' from:' + tweetCriteria.username
-			
+
 		if hasattr(tweetCriteria, 'since'):
 			urlGetData += ' since:' + tweetCriteria.since
-			
+
 		if hasattr(tweetCriteria, 'until'):
 			urlGetData += ' until:' + tweetCriteria.until
-			
+
 		if hasattr(tweetCriteria, 'querySearch'):
 			urlGetData += ' ' + tweetCriteria.querySearch
-			
+
 		if hasattr(tweetCriteria, 'lang'):
-			urlLang = 'lang=' + tweetCriteria.lang + '&'
+			urlLang = 'l=' + tweetCriteria.lang + '&'
 		else:
 			urlLang = ''
 		url = url % (urllib.parse.quote(urlGetData), urlLang, refreshCursor)
-		#print(url)
+		# print(url)
 
 		headers = [
 			('Host', "twitter.com"),
@@ -130,7 +130,7 @@ class TweetManager:
 			print("Unexpected error:", sys.exc_info()[0])
 			sys.exit()
 			return
-		
+
 		dataJson = json.loads(jsonResponse.decode())
-		
-		return dataJson		
+
+		return dataJson
