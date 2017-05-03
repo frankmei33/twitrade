@@ -4,7 +4,11 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
 def review_cleaner(review):
-    review = re.sub('[^a-zA-Z]',' ',review)
+    m = re.search('(.+)http', review)
+    if m:
+        review = m.group(1)
+    review = re.sub('#([^# ].)',r'\1',review)
+    review = re.sub('[^a-zA-Z ][^ ]*',' ', review)
     review = word_tokenize(review.lower())
     eng_stopwords = set(stopwords.words("english"))
     review = [w for w in review if not w in eng_stopwords]
