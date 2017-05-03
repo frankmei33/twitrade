@@ -8,12 +8,17 @@ from Twitter_scraping.got3.manager import TweetManager, TweetCriteria
 from stock_price import stock_price
 from sklearn.ensemble import RandomForestClassifier
 
-def main(argv):
+def predict(keyword):
 
-	if len(argv) != 1:
-		print('The number of parameters is incorrect. Input the keywords you want to search.')
-		return  
-	keyword = argv[0]
+	#if len(argv) != 1:
+	#	print('The number of parameters is incorrect. Input the keywords you want to search.')
+	#	return  
+	#keyword = argv[0]
+
+	with open('sentiment_classifier.pickle', 'rb') as f:
+		classifier = pickle.load(f)
+	with open('feature.pickle', 'rb') as f:
+		word_features = pickle.load(f)
 	
 	print('Get tweets...')
 	df = get_train(keyword)
@@ -172,14 +177,14 @@ def movingaverage(df):
 	return(finaldata)
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 	#load trained sentiment classifier and features
-	with open('sentiment_classifier.pickle', 'rb') as f:
-		classifier = pickle.load(f)
-	with open('feature.pickle', 'rb') as f:
-		word_features = pickle.load(f)
+#	with open('sentiment_classifier.pickle', 'rb') as f:
+#		classifier = pickle.load(f)
+#	with open('feature.pickle', 'rb') as f:
+#		word_features = pickle.load(f)
 
-	main(sys.argv[1:])
+#	main(sys.argv[1:])
 
 
 
